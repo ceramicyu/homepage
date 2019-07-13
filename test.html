@@ -90,6 +90,40 @@
 	t.clearFood({x:2,y:3})
 	
 	t.renderBodys([{x:4,y:5},{x:4,y:6}])
-	
+
+/*
+
+  rili()
+             function rili() {
+                const S = 24*60*60*1000
+                 var date= new Date()
+                 var time=date.getTime()
+                 var d=date.getDate()
+                 var w=date.getDay()
+
+                 var firstdayTime=time-(d-1)*S
+
+                 var str = ""
+
+                 for (var i=0;i<35;i++){
+                     var curDate=new Date(firstdayTime+i*S)
+                     var _d=curDate.getDate()
+                     var _m=curDate.getMonth()+1
+                     var _w=curDate.getDay()
+                     if (_d==d){
+                         str+="<td class='curday'>"+_m+"-"+_d+"/"+_w+"</td>"
+                     }else{
+                         str+="<td>"+_m+"-"+_d+"/"+_w+"</td>"
+                     }
+
+                     if (_w==0){
+                         str+="</tr><tr>"
+                     }
+                 }
+
+                 $("#rili table tbody").html("<tr>"+str+"</tr>")
+             }
+
+ */
 </script>
 
