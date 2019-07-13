@@ -1,0 +1,168 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<style type="text/css">
+			table tr td {border: 1px solid #000;width: 50px;height: 50px;}
+			table tr td.active{background: blue;}
+			table tr td.dead{background: blue;}
+		</style>
+	</head>
+	<body>
+		
+	</body>
+</html>
+
+<script type="text/javascript">
+	  
+	  class Tetris{
+		w=0;
+		h=0;
+		blocks=[[{x:5,y:0},{x:4,y:0}]];
+		b=[]
+	  constructor (){
+			  console.log(1)
+			  this.w=10;
+			  this.h=10;
+			 this.init()
+		  }
+		getId(x,y){
+			return "td"+"_"+x+"_"+y;
+		}  
+		  
+		init(){
+			 var html="<table border=\"1\" cellspacing=\"0\" cellpadding=\"0\">"		
+			
+			for (var j=0;j<this.h;j++){
+				html+="<tr>"
+				for (var i=0;i<this.w;i++){
+					          var _id=this.getId(i,j)
+							  html+="<td id= \""+_id+"\"></td>"
+				}
+				html+="</tr>"
+		    }
+			
+			html+="</table>"
+			document.querySelector("body").innerHTML=html
+			
+			this.randomBlock()
+		}  
+		
+		renderBlock(x,y){
+			var dom=document.getElementById(this.getId(x,y))
+			dom.classList.add("active")
+		}
+		clearBlock(x,y){
+			console.log("clear2")
+			var dom=document.getElementById(this.getId(x,y))
+			dom.classList.remove("active")
+		}
+		
+		randomBlock(){
+			var index=0
+			this.b=this.blocks[index]
+		}
+		
+		initBlocks(){		
+			
+			for (var i = 0; i <this.b.length ;i++ ){
+				this.renderBlock(this.b[i].x,this.b[i].y)
+			}
+		}
+		
+		clearBlocks(){	
+			console.log("clear",this.b)
+			for (var i = 0; i <this.b.length ;i++ ){
+				this.clearBlock(this.b[i].x,this.b[i].y)
+			}
+		}
+		
+		//下落
+		moveDown(){
+			var _b=[]
+			for (var i=0;i<this.b.length;i++){				
+				_b[i]={x:this.b[i].x,y:this.b[i].y+1}
+				if (_b[i].y>=this.h){
+					return false
+				}
+			}
+			this.clearBlocks()
+			this.b=_b
+			console.log(this.b)
+            this.initBlocks()
+			return true
+		}
+		
+		//左移
+		moveLeft(){
+			var _b=[]
+			for (var i=0;i<this.b.length;i++){				
+				_b[i]={x:this.b[i].x-1,y:this.b[i].y}
+				if (_b[i].x<0){
+					return false
+				}
+			}
+			this.clearBlocks()
+			this.b=_b
+			console.log(this.b)
+		    this.initBlocks()
+			return true
+		}
+		
+		//右移
+		moveRight(){
+			var _b=[]
+			for (var i=0;i<this.b.length;i++){		//this.checkMove(this.b[i].x,this.b[i].y);		
+				_b[i]={x:this.b[i].x+1,y:this.b[i].y}
+				if (_b[i].x>=this.w){
+					return false
+				}
+				if (!this.checkMove(_b[i].x,_b[i].y)){
+					return false
+				}
+				
+			}
+			this.clearBlocks()
+			this.b=_b
+			console.log(this.b)
+		    this.initBlocks()
+			return true
+		}
+		//检查移动
+		checkMove(x,y){
+		     var dom=document.getElementById(this.getId(x,y))	
+			
+			if (dom.className=="dead"){
+				return false
+			}
+			
+			return true
+		}
+		
+		
+	  }
+	var t=new Tetris()
+	t.renderBlock(6,6)
+	t.initBlocks()
+	window.onkeydown=function(e){
+		console.log(e.keyCode)
+		if (e.keyCode==40){
+			t.moveDown()
+		}else if (e.keyCode==37){
+			t.moveLeft()
+		}else if(e.keyCode==39){
+			t.moveRight()
+		}
+	}
+	
+	
+	function copy(obj){
+    var newobj = {};
+    for ( var attr in obj) {
+        newobj[attr] = obj[attr];
+    }
+    return newobj;
+}
+</script>

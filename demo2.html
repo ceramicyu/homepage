@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<style type="text/css">
+			#container{width: 800px;height: 200px;border: 1px solid #000000;position: relative;overflow: hidden;}
+			.item{width: 100px;height: 200px;position: absolute;left: 0;background: #FFFFFF;}
+			
+			.item img{width: 400px;height: 100%;}
+			
+			.active{width: 400px;animation: d1 1s;}
+		
+		</style>
+		
+	</head>
+	<body>
+	
+		<div id="container" >				
+				
+		</div>
+	</body>
+</html>
+<script type="text/javascript">
+	/*
+	      0  0
+		  1  400
+		  2  500
+		  3  600
+	*/
+
+    var container=document.getElementById("container")
+	var items;
+	
+	var width=800
+	var show_width=300
+	var margin=100
+	var curmargin=300
+	var data=[
+		    {img_url:"image/1.jpg"},
+	        {img_url:"image/2.jpg"},
+			{img_url:"image/4.jpg"},
+			{img_url:"image/3.jpg"},
+			 {img_url:"image/1.jpg"},
+			{img_url:"image/2.jpg"},
+			{img_url:"image/4.jpg"},
+			{img_url:"image/3.jpg"},
+			{img_url:"image/4.jpg"},
+			{img_url:"image/1.jpg"}]
+	       
+	function initImg()	{
+		var html=""
+		for(var i=0;i<data.length;i++){
+			html+="<div index='"+i+"'  class=\"item\"><img src='"+data[i].img_url+"' /></div>"
+		}
+		container.innerHTML=html
+		 items=document.querySelectorAll(".item")
+		 margin=(width-show_width)/(data.length-1)
+		 curmargin=show_width-margin
+	}   
+	
+	initImg()
+	 init()
+	  
+	 for (var i = 0 ;i<items.length; i++){
+		  items[i].addEventListener("mouseover",function(){
+			  var index=this.getAttribute("index")
+			  move(index)
+			  opacity(this)
+		  })
+	 }
+	  function init(){
+	 		
+	 		 for (var i = 0 ;i<items.length; i++){
+	 			 if (i==0){
+					items[i].style.left=0 
+				 }else{
+					 items[i].style.left=(curmargin+i*margin)+"px"
+				 }
+	 		 }
+	 }
+	  var timers=[];
+	 
+	 function move(curIndex){
+		
+		 for (var i = 0 ;i<items.length; i++){
+			  var s=items[i].style.left
+			  var start=parseInt(s)
+		
+			  var end=0;
+		 		  if (i>curIndex){
+					 end=(curmargin+margin*i)
+		 			
+		 		  }else{		 			  
+		 			   end=(margin*i)
+					  
+		 		  }		
+			   render(items[i],start,end,i)
+		 }
+	 }
+	  
+	  
+	  function render(obj,start,end,i){
+		   clearInterval(timers[i])
+		 var d=end-start
+		  timers[i]=setInterval(function(){
+			 start+=d/50
+			 if (Math.abs(end-start)<5){
+				  obj.style.left=end+"px"
+				  clearInterval(timers[i])
+				  return
+			 }
+			 obj.style.left=start+"px"
+			 
+		 },1000/60)
+	  }
+	  
+	  
+	  function opacity(me){
+		  return
+		   for (var i = 0 ;i<items.length; i++){
+			   var img=items[i].querySelector("img")
+			   img.style.opacity=0.3
+		   }
+		   var img=me.querySelector("img")
+		   img.style.opacity=1
+	  }
+</script>

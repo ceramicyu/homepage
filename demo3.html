@@ -1,0 +1,171 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<style type="text/css">
+			table tr td {border: 1px solid #000;width: 30px;height: 30px;}
+			table tr td.active{background: blue;}
+			table tr td.food{background: red;}
+		</style>
+	</head>
+	<body>
+		
+	</body>
+</html>
+
+<script type="text/javascript">
+	  
+	  class Tetris{
+		w=0;
+		h=0;
+		d={x:1,y:0};
+		body=[{x:2,y:1},{x:2,y:2}]
+		food={x:2,y:6}
+		timer=null
+	  constructor (){
+			  console.log(1)
+			  this.w=20;
+			  this.h=15;
+			  this.d={x:1,y:0};
+			  this.body=[{x:2,y:1},{x:2,y:2}]
+			  this.food={x:2,y:6}
+			  this.init()
+		  }
+		getId(x,y){
+			return "td"+"_"+x+"_"+y;
+		}  
+		  
+		init(){
+			 var html="<table border=\"1\" cellspacing=\"0\" cellpadding=\"0\">"		
+			
+			for (var j=0;j<this.h;j++){
+				html+="<tr>"
+				for (var i=0;i<this.w;i++){
+					          var _id=this.getId(i,j)
+							  html+="<td id= \""+_id+"\"></td>"
+				}
+				html+="</tr>"
+		    }
+			
+			html+="</table>"
+			document.querySelector("body").innerHTML=html
+			
+			
+		}  
+		renderFood(x,y){
+			var dom=document.getElementById(this.getId(x,y))
+			dom.classList.add("food")
+		}
+		clearFood(x,y){
+			console.log("clear2")
+			var dom=document.getElementById(this.getId(x,y))
+			dom.classList.remove("food")
+		}
+		
+		renderBlock(x,y){
+			var dom=document.getElementById(this.getId(x,y))
+			dom.classList.add("active")
+		}
+		renderBody(obj){
+			for(var i in obj){
+				this.renderBlock(obj[i].x,obj[i].y)
+			}
+			
+		}
+		clearBlock(x,y){
+			console.log("clear2")
+			var dom=document.getElementById(this.getId(x,y))
+			dom.classList.remove("active")
+		}
+		
+		randomfood(){
+			var x=Math.floor(Math.random()*this.w)
+			var y=Math.floor(Math.random()*this.h)
+			this.food={x:x,y:y}
+		}
+		//
+		move(){
+			
+               var p=this.body.pop()
+			   this.clearBlock(p.x,p.y)
+			   
+			   this.body.unshift({x:this.body[0].x+this.d.x,y:this.body[0].y+this.d.y})
+		       this.checkMove()
+			
+			return this.body
+		}
+		
+		checkMove(){
+			if (this.body[0].x<0){alert("左")}
+			if (this.body[0].x>=this.w){alert("右")}
+			if (this.body[0].y<0){alert("上")}
+			if (this.body[0].y>=this.h){alert("下")}
+		}
+		
+		//eat
+		eat(){
+			console.log(this.body[0],this.food)
+			if (this.food.x==this.body[0].x+this.d.x&&this.food.y==this.body[0].y+this.d.y){
+				console.log("eat")
+				this.body.unshift({x:this.body[0].x+this.d.x,y:this.body[0].y+this.d.y})
+				this.clearFood(this.food.x,this.food.y)
+				this.renderBlock(this.food.x,this.food.y)
+				this.randomfood()
+				this.renderFood(this.food.x,this.food.y)
+			}
+		}
+		//
+		run(){
+			var _this=this
+			this.timer=setInterval(function(){
+				console.log(_this.body)
+				_this.eat()
+				// _this.move()
+				_this.renderBody(_this.move())
+				_this.eat()
+			},500)
+		}
+		
+		
+	  }
+	  
+	var   arr=[{x:1,y:1}]
+	var t=new Tetris()
+	t.renderFood(t.food.x,t.food.y)
+	t.renderBody(t.body)
+	
+
+	
+	
+	window.onkeydown=function(e){
+		console.log(e.keyCode)
+		
+		if (e.keyCode==40){
+			t.d={x:0,y:1}
+		}else if (e.keyCode==37){
+			// t.moveLeft()
+			t.d={x:-1,y:0}
+		}else if(e.keyCode==39){
+			// t.moveRight()
+			t.d={x:1,y:0}
+		}else if(e.keyCode==38){
+			t.d={x:0,y:-1}
+		}else if (e.keyCode==13){
+			t.run()
+		}else if (e.keyCode==32){
+			clearInterval(t.timer)
+		}
+		
+	}
+	
+	
+	function copy(obj){
+    var newobj = {};
+    for ( var attr in obj) {
+        newobj[attr] = obj[attr];
+    }
+    return newobj;
+}
+</script>
