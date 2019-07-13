@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<style type="text/css">
+		  #can{border: 1px solid #000000;}	
+		  table tr td{width: 30px;height: 30px;}
+		</style>
+	</head>
+	<body>
+		<table border="1" cellspacing="0" cellpadding="0" id="box">			
+			<tr><td></td></tr>
+		</table>
+		
+	</body>
+	
+</html>
+<script>
+	var params={
+		w:10,
+		h:15
+	}
+	
+	var tale={}
+	
+	var is_creat=false
+	var start_position=[
+		[{x:4,y:1},{x:5,y:1},{x:4,y:0},{x:5,y:0}],
+		[{x:3,y:0},{x:6,y:0},{x:4,y:0},{x:5,y:0}],
+		[{x:4,y:0},{x:5,y:0}],
+		[{x:5,y:1},{x:5,y:0},{x:4,y:1},{x:4,y:2}],
+		[{x:5,y:1},{x:5,y:2},{x:4,y:1},{x:4,y:0}],
+		[{x:4,y:1},{x:5,y:1},{x:5,y:0},{x:6,y:1}],
+	]
+	class Table {
+		constructor(w,h) {
+			var box=document.getElementById("box")
+			var table=""
+			for(var i=0;i<params.h;i++){
+				var tr="<tr>"
+				for(var j=0;j<params.w;j++){
+					tr+="<td id='td_"+j+"_"+i+"'></td>"
+					tale["td_"+j+"_"+i]=0
+				}
+				table+=tr+"</tr>"
+			}
+			box.innerHTML=table
+		}
+		
+		draw(x,y){
+			var td=document.getElementById("td_"+x+"_"+y)
+			td.style.background="blue"
+		}
+		
+		clear(x,y){
+			var td=document.getElementById("td_"+x+"_"+y)
+			td.style.background="transparent"
+		}
+		
+		drawObj(obj){
+			for(var i in obj){
+				this.draw(obj[i].x,obj[i].y)
+			}
+		}
+		
+		clearObj(obj){
+			for(var i in obj){
+				this.clear(obj[i].x,obj[i].y)
+			}
+		}
+		
+		//下移
+		moveDown(obj){
+			var newObj=obj
+			for(var i in obj){
+				if(obj[i].y+1>=params.h){
+					is_creat=true
+					this.drawObj(newObj)
+					return newObj
+				}
+				if(tale["td_"+(obj[i].x)+"_"+(obj[i].y+1)]==1){
+					is_creat=true
+					this.drawObj(newObj)
+					return newObj
+				}
+			}
+			this.clearObj(obj)
+			for(var i in newObj){
+				newObj[i].y++
+			}
+			this.drawObj(newObj)
+			return newObj
+		}
+		//上移
+		moveUp(obj){
+			var newObj=obj
+			for(var i in obj){
+				if(obj[i].y<=0){
+					this.drawObj(newObj)
+					return newObj
+				}
+				if(tale["td_"+(obj[i].x)+"_"+(obj[i].y-1)]==1){
+					this.drawObj(newObj)
+					return newObj
+				}
+			}
+			this.clearObj(obj)
+			for(var i in newObj){
+				newObj[i].y--
+			}
+			this.drawObj(newObj)
+			return newObj
+		}
+		//左移
+		moveLeft(obj){
+			var newObj=obj
+			for(var i in obj){
+				if(obj[i].x<=0){
+					this.drawObj(newObj)
+					return newObj
+				}
+				if(tale["td_"+(obj[i].x-1)+"_"+obj[i].y]==1){
+					this.drawObj(newObj)
+					return newObj
+				}
+			}
+			this.clearObj(obj)
+			for(var i in newObj){
+				newObj[i].x--
+			}
+			this.drawObj(newObj)
+			return newObj
+		}
+		//右移
+		moveRight(obj){
+			var newObj=obj
+			console.log(1,newObj)
+			for(var i in obj){
+				if(obj[i].x+1>=params.w){
+					this.drawObj(newObj)
+					return newObj
+				}
+				if(tale["td_"+(obj[i].x+1)+"_"+obj[i].y]==1){
+					this.drawObj(newObj)
+					return newObj
+				}
+			}
+			console.log(2,newObj)
+			this.clearObj(obj)
+			for(var i in newObj){
+				newObj[i].x++
+			}
+			this.drawObj(newObj)
+			return newObj
+		}
+		
+		//
+		 drawTale(){
+			 for(var i in tale){
+				var td=document.getElementById(i)
+				if (tale[i]==0){
+					td.style.background="transparent" 
+				}else{
+					td.style.background="blue" 
+				}
+				
+			 }
+		 }
+	}
+	
+	
+	var tb=new Table(10,15)
+	
+
+	var ac=null;
+	 ac=reset(start_position[5])
+	tb.drawObj(ac)
+	
+	
+	setInterval(function(){
+		
+		console.log(start_position[0])
+		tb.drawTale(tale)
+		ac=tb.moveDown(ac)
+		
+		if (is_creat){
+			
+			console.log(ac)
+			tale=add(tale,ac)			
+			ac=reset(start_position[Math.floor(Math.random()*start_position.length)])	
+			tale=ForEachDescTr(tale)
+			tb.drawTale(tale)
+			tb.drawObj(ac)
+			is_creat=false
+		}
+	},1000)
+	
+	
+	document.onkeydown=function(event){
+		var key=(event.keyCode)
+		tb.drawTale(tale)
+		if(key==39){
+			ac=tb.moveRight(ac)			
+		}
+		if(key==40){
+			ac=tb.moveDown(ac)			
+		}
+		if(key==38){
+			ac=Rotate(ac)
+			tb.drawObj(ac)
+		}
+		if(key==37){
+			ac=tb.moveLeft(ac)
+		}
+	}
+	
+	//旋转
+	function Rotate(ac){
+		
+		//最小矩形
+		var min_x=100,min_y=100,max_x=0,max_y=0
+		for(var i in ac){
+			console.log(ac[i])
+			if (min_x>ac[i].x){min_x=ac[i].x}
+			if (min_y>ac[i].y){min_y=ac[i].y}
+			if (max_x<ac[i].x){max_x=ac[i].x}
+			if (max_y<ac[i].y){max_y=ac[i].y}
+		}
+		//旋转中心 矩形左上角
+		var x0=0,y0=0
+		x0=min_x
+		y0=min_y
+		console.log(x0,y0)
+		console.log(0,0,max_x-x0,max_y-y0)
+		
+		//矩形正方形
+		var w0=max_x-x0
+		var h0=max_y-y0
+		if (w0>h0){
+			h0=w0
+		}else{
+			w0=h0
+		}
+		
+		console.log(x0,y0,w0,h0)
+		
+		
+		var newac=[]
+		for(var i in ac){			
+			newac.push({x:x0+(ac[i].y-y0) ,y:y0+(h0-(ac[i].x-x0))})
+		}		
+		return newac
+	}
+	
+	function ForEachDescTr(tale){
+		for(var i=0;i<params.h;i++){
+			descTr(i,tale)
+		}
+		return tale
+	}
+	
+	function descTr(y,tale){
+		for(var i=0;i<params.w;i++){
+			if(tale["td_"+i+"_"+y]==0){
+				return
+			}
+		}
+		for(var j=y;j>=0;j--){
+			for(var i=0;i<params.w;i++){
+				if (j>0){
+					 tale["td_"+(i)+"_"+(j)]=tale["td_"+(i)+"_"+(j-1)]
+				}else{
+					 tale["td_"+(i)+"_"+(0)]=0
+				}
+			  
+		    }
+		}
+		return tale
+	}
+	
+	function add(tale,ac){
+		for(var i in ac){
+			tale["td_"+(ac[i].x)+"_"+(ac[i].y)]=1
+		}
+		return tale
+	}
+	function reset(data){
+		ac=[]
+		for(var i in data){
+			ac.push({x:data[i].x,y:data[i].y})
+		}
+		return ac
+	}
+	
+</script>
