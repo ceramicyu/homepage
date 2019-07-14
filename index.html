@@ -53,13 +53,14 @@
 
                 var y=myDate.getFullYear();
                 var m=myDate.getMonth();
+				var curM=m+1;
                 var d=myDate.getDate();
                 var h=myDate.getHours();
                 var f=myDate.getMinutes();
                 var s=myDate.getSeconds();
                 var w=myDate.getDay();
                 var week=["星期日","星期一","星期二","星期三","星期四","星期五","星期六"];
-                document.querySelector("#currentTime").innerHTML=myDate+";"+y+"年"+m+"月"+d+"日"+h+"时"+f+"分"+s+"秒"+week[w];
+                document.querySelector("#currentTime").innerHTML=myDate+";"+y+"年"+curM+"月"+d+"日"+h+"时"+f+"分"+s+"秒"+week[w];
                 t=setTimeout(time,1000);
             }
            const S=24*60*60*1000
@@ -84,11 +85,13 @@
                     var newDate=new Date(firstDateT+(i*7+j)*S);
 					
                     var date=newDate.getDate();
+					var m=newDate.getMonth();
+					var curM=m+1;
 					
 					 if(date==d){
-									 st+="<td class='curday'>"+date+"</td>";
+									 st+="<td class='curday'>"+date+"/"+curM+"</td>";
 					}else{
-						st+="<td>"+date+"</td>";
+						st+="<td>"+date+"/"+curM+"</td>";
 					}
 
                }
