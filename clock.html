@@ -1,0 +1,551 @@
+<!DOCTYPE  html>
+<html><head>
+		<meta charset="UTF-8">
+		<title>球落地</title>
+		<style>
+		
+			canvas{
+				position: absolute;
+				top: 0;bottom: 0;
+				left: 0;right: 0;
+				margin: auto;
+				
+			}
+			#canvas1{
+				z-index: 990;
+			}
+			#canvas2{
+				z-index: 88;
+			}
+		</style>
+	</head>
+	<body>
+		<canvas id="canvas" width="900" height="600"></canvas>
+		<canvas id="canvas2" width="900" height="600"></canvas>
+	
+	<script>
+		var can=document.getElementById('canvas');
+		var can2=document.getElementById('canvas2');
+		var ctx=can.getContext('2d');
+		var ctx2=can2.getContext('2d');
+		const colors=["#33B5E5","#0099CC","#AA66CC","#669900","#FFBB33","#FF8800","#FF4444","CC0000"];
+
+		var ballss=[[],[],[],[],[],[]]//存储6个时间的小球集合
+		
+		//创建对象
+		function Ball(){}
+		var www=0,xx,yy;
+		Ball.prototype={
+			init:function(x,y){
+				this.x=x;
+				this.y=y;
+				this.r=7;
+				this.c=colors[Math.floor(Math.random()*10)]
+				this.g=0.5
+				this.vy=Math.pow(-1,Math.ceil(Math.random()*1000))*Math.ceil(Math.random()*5+1)
+				this.vx=Math.pow(-1,Math.ceil(Math.random()*1000))*2
+				
+				
+				
+			},
+			draw2:function(a,b){
+				
+				ctx2.beginPath()
+				ctx2.fillStyle='green';
+				ctx2.arc(a,b,this.r,0,2*Math.PI);
+				ctx2.fill()
+			},
+			draw:function(){
+				ctx.beginPath()
+				ctx.fillStyle=this.c;
+				ctx.arc(this.x,this.y,this.r,0,2*Math.PI);
+				ctx.fill()
+				this.update();
+			},
+			update:function(){
+				if(this.vy>=0){
+					if(this.y<=590){
+						this.vy+=this.g
+				       this.y+=this.vy
+					}else{
+						this.vy=-0.85*this.vy
+					}
+					
+					
+				}else{
+					if(this.vy>(-0.2)){
+						
+				       this.vy=0.2
+					}else{
+						this.vy+=this.g
+				       this.y+=this.vy
+					}
+				    	
+				}
+				this.x+=this.vx
+				
+				
+			}
+		}
+		
+//		var inumber6=0,inumber5=0;
+           var digit =
+
+    [
+
+        [
+
+            [0,0,1,1,1,0,0],
+
+            [0,1,1,0,1,1,0],
+
+            [1,1,0,0,0,1,1],
+
+            [1,1,0,0,0,1,1],
+
+            [1,1,0,0,0,1,1],
+
+            [1,1,0,0,0,1,1],
+
+            [1,1,0,0,0,1,1],
+
+            [1,1,0,0,0,1,1],
+
+            [0,1,1,0,1,1,0],
+
+            [0,0,1,1,1,0,0]
+
+        ],//0
+
+        [
+
+            [0,0,0,1,1,0,0],
+
+            [0,1,1,1,1,0,0],
+
+            [0,0,0,1,1,0,0],
+
+            [0,0,0,1,1,0,0],
+
+            [0,0,0,1,1,0,0],
+
+            [0,0,0,1,1,0,0],
+
+            [0,0,0,1,1,0,0],
+
+            [0,0,0,1,1,0,0],
+
+            [0,0,0,1,1,0,0],
+
+            [1,1,1,1,1,1,1]
+
+        ],//1
+
+        [
+
+            [0,1,1,1,1,1,0],
+
+            [1,1,0,0,0,1,1],
+
+            [0,0,0,0,0,1,1],
+
+            [0,0,0,0,1,1,0],
+
+            [0,0,0,1,1,0,0],
+
+            [0,0,1,1,0,0,0],
+
+            [0,1,1,0,0,0,0],
+
+            [1,1,0,0,0,0,0],
+
+            [1,1,0,0,0,1,1],
+
+            [1,1,1,1,1,1,1]
+
+        ],//2
+
+        [
+
+            [1,1,1,1,1,1,1],
+
+            [0,0,0,0,0,1,1],
+
+            [0,0,0,0,1,1,0],
+
+            [0,0,0,1,1,0,0],
+
+            [0,0,1,1,1,0,0],
+
+            [0,0,0,0,1,1,0],
+
+            [0,0,0,0,0,1,1],
+
+            [0,0,0,0,0,1,1],
+
+            [1,1,0,0,0,1,1],
+
+            [0,1,1,1,1,1,0]
+
+        ],//3
+
+        [
+
+            [0,0,0,0,1,1,0],
+
+            [0,0,0,1,1,1,0],
+
+            [0,0,1,1,1,1,0],
+
+            [0,1,1,0,1,1,0],
+
+            [1,1,0,0,1,1,0],
+
+            [1,1,1,1,1,1,1],
+
+            [0,0,0,0,1,1,0],
+
+            [0,0,0,0,1,1,0],
+
+            [0,0,0,0,1,1,0],
+
+            [0,0,0,1,1,1,1]
+
+        ],//4
+
+        [
+
+            [1,1,1,1,1,1,1],
+
+            [1,1,0,0,0,0,0],
+
+            [1,1,0,0,0,0,0],
+
+            [1,1,1,1,1,1,0],
+
+            [0,0,0,0,0,1,1],
+
+            [0,0,0,0,0,1,1],
+
+            [0,0,0,0,0,1,1],
+
+            [0,0,0,0,0,1,1],
+
+            [1,1,0,0,0,1,1],
+
+            [0,1,1,1,1,1,0]
+
+        ],//5
+
+        [
+
+            [0,0,0,0,1,1,0],
+
+            [0,0,1,1,0,0,0],
+
+            [0,1,1,0,0,0,0],
+
+            [1,1,0,0,0,0,0],
+
+            [1,1,0,1,1,1,0],
+
+            [1,1,0,0,0,1,1],
+
+            [1,1,0,0,0,1,1],
+
+            [1,1,0,0,0,1,1],
+
+            [1,1,0,0,0,1,1],
+
+            [0,1,1,1,1,1,0]
+
+        ],//6
+
+        [
+
+            [1,1,1,1,1,1,1],
+
+            [1,1,0,0,0,1,1],
+
+            [0,0,0,0,1,1,0],
+
+            [0,0,0,0,1,1,0],
+
+            [0,0,0,1,1,0,0],
+
+            [0,0,0,1,1,0,0],
+
+            [0,0,1,1,0,0,0],
+
+            [0,0,1,1,0,0,0],
+
+            [0,0,1,1,0,0,0],
+
+            [0,0,1,1,0,0,0]
+
+        ],//7
+
+        [
+
+            [0,1,1,1,1,1,0],
+
+            [1,1,0,0,0,1,1],
+
+            [1,1,0,0,0,1,1],
+
+            [1,1,0,0,0,1,1],
+
+            [0,1,1,1,1,1,0],
+
+            [1,1,0,0,0,1,1],
+
+            [1,1,0,0,0,1,1],
+
+            [1,1,0,0,0,1,1],
+
+            [1,1,0,0,0,1,1],
+
+            [0,1,1,1,1,1,0]
+
+        ],//8
+
+        [
+
+            [0,1,1,1,1,1,0],
+
+            [1,1,0,0,0,1,1],
+
+            [1,1,0,0,0,1,1],
+
+            [1,1,0,0,0,1,1],
+
+            [0,1,1,1,0,1,1],
+
+            [0,0,0,0,0,1,1],
+
+            [0,0,0,0,0,1,1],
+
+            [0,0,0,0,1,1,0],
+
+            [0,0,0,1,1,0,0],
+
+            [0,1,1,0,0,0,0]
+
+        ],//9
+
+        [
+
+            [0,0,0,0],
+
+            [0,0,0,0],
+
+            [0,1,1,0],
+
+            [0,1,1,0],
+
+            [0,0,0,0],
+
+            [0,0,0,0],
+
+            [0,1,1,0],
+
+            [0,1,1,0],
+
+            [0,0,0,0],
+
+            [0,0,0,0]
+
+        ]//:
+
+    ];
+		
+		setInterval(fn,1000/60)
+	 	var k=[0,0,0,0,0,0]
+	 	var inumber=[0,0,0,0,0,0]
+	 	function fn(){
+	 		
+	 		var date=new Date()
+	 		var s=date.getSeconds()
+	 		var m=date.getMinutes()
+	 		var h=date.getHours()
+	 		inumber[5]=s%10
+	 		inumber[4]=Math.floor(s/10)
+	 		inumber[3]=m%10
+	 		inumber[2]=Math.floor(m/10)
+	 		inumber[1]=h%10
+	 		inumber[0]=Math.floor(h/10)
+	 		
+	 		
+	 		
+	 		
+	 		
+	 		ctx.clearRect(0,0,1000,600)
+	 		ctx2.clearRect(0,0,1000,600)
+	 		drawTime2(inumber[0],20,40,5);
+	 		drawTime2(inumber[1],140,40,5);
+	 		drawTime2(10,260,40,5);//冒号
+	 		drawTime2(inumber[2],340,40,5);
+	 		drawTime2(inumber[3],460,40,5);
+	 		drawTime2(10,580,40,5);//冒号
+	 		drawTime2(inumber[4],660,40,5);
+	 		drawTime2(inumber[5],780,40,5);
+	 		//秒钟
+	 		if(inumber[5]!=k[5]){
+	 			drawTime(inumber[5],780,40,5);
+	 		    
+	 		  }
+	 		for(var i=0;i<ballss[5].length;i++){
+	 			 ballss[5][i].draw();
+	 			
+	 			   }
+	 		k[5]=inumber[5];
+	 		
+	 		if(inumber[4]!=k[4]){
+	 			drawTime(inumber[4],660,40,4);
+	 		   
+	 		  }
+	 		for(var i=0;i<ballss[4].length;i++){
+	 			 ballss[4][i].draw();
+	 			
+	 			   }
+	 		k[4]=inumber[4];
+	 	
+	 		//分钟
+	 		if(inumber[3]!=k[3]){
+	 			drawTime(inumber[3],460,40,3);
+	 		    
+	 		  }
+	 		for(var i=0;i<ballss[3].length;i++){
+	 			 ballss[3][i].draw();
+	 			
+	 			   }
+	 		k[3]=inumber[3];
+	 		
+	 		if(inumber[2]!=k[2]){
+	 			drawTime(inumber[2],340,40,2);
+	 		   
+	 		  }
+	 		for(var i=0;i<ballss[2].length;i++){
+	 			 ballss[2][i].draw();
+	 			
+	 			   }
+	 		k[2]=inumber[2];
+	 		
+	 		//时钟
+	 		if(inumber[1]!=k[1]){
+	 			drawTime(inumber[1],140,40,3);
+	 		    
+	 		  }
+	 		for(var i=0;i<ballss[1].length;i++){
+	 			 ballss[1][i].draw();
+	 			
+	 			   }
+	 		k[1]=inumber[1];
+	 		
+	 		if(inumber[0]!=k[0]){
+	 			drawTime(inumber[0],20,40,2);
+	 		   
+	 		  }
+	 		for(var i=0;i<ballss[0].length;i++){
+	 			 ballss[0][i].draw();
+	 			
+	 			   }
+	 		k[0]=inumber[0];
+	 		
+	 		
+	 		
+	 		
+	 		
+	 		
+	 	}
+		
+		
+		
+		//封装画数字的函数
+		function drawTime(a,xoffset,yoffset,b){
+			numMx=digit[a]
+			for(var i=0;i<numMx.length;i++){
+				for(var j=0;j<numMx[i].length;j++){
+					if(numMx[i][j]==1){
+						var ball=new Ball()
+	 	                ball.init(xoffset+j*14,yoffset+i*15);
+	 	                ballss[b].push(ball)
+						
+						
+					}
+				}
+			}
+			
+		}
+		
+		//封装画数字的函数2
+		function drawTime2(a,xoffset,yoffset,b){
+			numMx=digit[a]
+			for(var i=0;i<numMx.length;i++){
+				for(var j=0;j<numMx[i].length;j++){
+					if(numMx[i][j]==1){
+						var ball2=new Ball()
+	 	                ball2.init();
+	 	                ball2.draw2(xoffset+j*14,yoffset+i*15)
+						
+						
+					}
+				}
+			}
+			
+		}
+		
+		
+		
+		
+		
+		
+		
+		
+//		
+//		//画每一个数字
+//		drawTime(inumber5)
+//		
+//		function drawTime(a,xoffset,yoffset,b){
+//			numMx=digit[a]
+//			for(var i=0;i<numMx.length;i++){
+//				for(var j=0;j<numMx[i].length;j++){
+//					if(numMx[i][j]==1){
+//						var ball=new Ball()
+//	 	                ball.init(200+j*14,i*15);
+//	 	                ballss[0].push(ball)
+//						
+//						
+//					}
+//				}
+//			}
+//			
+//		}
+//		
+//		function drawTime5(a){
+//			numMx=digit[a]
+//			for(var i=0;i<numMx.length;i++){
+//				for(var j=0;j<numMx[i].length;j++){
+//					if(numMx[i][j]==1){
+//						var ball=new Ball()
+//	 	                ball.init(100+j*14,i*15);
+//	 	                ballss[0].push(ball)
+//						
+//						
+//					}
+//				}
+//			}
+//			
+//		}
+//	
+//	 	
+//	 	
+	 	
+	 	
+		
+		
+		
+	</script>
+	
+
+</body></html>
