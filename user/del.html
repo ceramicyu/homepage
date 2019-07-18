@@ -85,7 +85,8 @@ getData()
                                     url: "http://106.13.60.133:8900//user/del",//url
                                     data: {id:$(this).attr('index')},
                                     success: function (data) {
-                                       window.reload()
+                                        alert("删除成功")
+                                       window.location.reload()
                                     }
                                 })
 
