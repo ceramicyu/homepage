@@ -61,7 +61,7 @@ getData()
                              var sex = ""
                              if(data[i].sex==1){sex='男'}else if(data[i].sex==2){sex='女'}else{sex='未知'}
                              str += "<div style='margin: 5px;border: 1px solid #AAA;padding: 5px;'>" +
-                                     "<div><b>姓名：</b>"+data[i].username+"<a style='float: right;' href='http://106.13.60.133:8900/user/del?id="+data[i].id+"'>删除</a></div>" +
+                                     "<div><b>姓名：</b>"+data[i].username+"<a style='float: right;' id='"+data[i].id+"'>删除</a></div>" +
                                      "<div><b>性别:</b>"+(sex)+"</div>" +
                                      "<div><b>辈分:</b>"+(data[i].beifen)+"</div>" +
                                      "<div><b>生日:</b>"+(data[i].birthday)+"</div>" +
@@ -75,6 +75,18 @@ getData()
                                      "</div>"
                          }
                          $("#box").html(str)
+                            $(".del").off("click").on("click",function () {
+                                $.ajax({
+                                    type: "POST",//方法类型
+                                    dataType: "json",//预期服务器返回的数据类型
+                                    url: "http://106.13.60.133:8900//user/del",//url
+                                    data: {id:$(this).attr('index')},
+                                    success: function (data) {
+                                       window.reload()
+                                    }
+                                })
+
+                            })
                      }
 
 
