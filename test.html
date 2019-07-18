@@ -126,4 +126,13 @@
 
  */
 </script>
+public function deluser(){
+
+$model = db('User','');// 管理员表
+$id = input('id',0);
+
+$user = $model->where(['id'=>$id])->delete();
+
+JCode(0,"xxx",$user);
+}
 
