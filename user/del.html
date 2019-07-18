@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用户表</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- 可选的 Bootstrap 主题文件（一般不用引入） -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap-theme.min.css"
+          integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous"></script>
+</head>
+
+<style>
+    body{
+        font-size: 20px;}
+    table tr td{border: 1px solid #0a001f}
+    nav{margin: 15px;text-align: center;border-radius: 5px;}
+    nav a{
+        width: 45%;display: inline-block;
+        text-align: center;
+        padding: 5px;
+        color: #0a001f;
+        background: #DDD;
+    }
+</style>
+<body>
+<nav><a style="" href="homeholder.html">登记</a><a style="background: #83b573;" href="userlist.html">查看</a></nav>
+<div style="margin: 5px;" id="box"></div>
+
+
+</body>
+</html>
+
+<script>
+    $(function () {
+getData()
+         function getData() {
+
+            $.ajax({
+                type: "POST",//方法类型
+                dataType: "json",//预期服务器返回的数据类型
+                url: "http://106.13.60.133:8900//user/list",//url
+                data: {page_id:0},
+                success: function (data) {
+                    // alert("成功");
+                     if(data.data.length>0){
+                         data=data.data
+
+                         var str = ""
+                         for (var i in data){
+                             var sex = ""
+                             if(data[i].sex==1){sex='男'}else if(data[i].sex==2){sex='女'}else{sex='未知'}
+                             str += "<div style='margin: 5px;border: 1px solid #AAA;padding: 5px;'>" +
+                                     "<div><b>姓名：</b>"+data[i].username+"<a style='float: right;' href='http://106.13.60.133:8900/user/del?id="+data[i].id+"'>删除</a></div>" +
+                                     "<div><b>性别:</b>"+(sex)+"</div>" +
+                                     "<div><b>辈分:</b>"+(data[i].beifen)+"</div>" +
+                                     "<div><b>生日:</b>"+(data[i].birthday)+"</div>" +
+                                     "<div><b>电话:</b>"+(data[i].tel)+"</div>" +
+                                     "<div><b>家庭住址:</b>"+(data[i].addr_p+data[i].addr_c+data[i].addr_t+data[i].addr_s)+"</div>" +
+                                     "<div><b>学历:</b>"+(data[i].edu)+"</div>" +
+                                     "<div><b>职业:</b>"+(data[i].work_type)+"</div>" +
+                                     "<div><b>单位:</b>"+(data[i].work_place)+"</div>" +
+                                     "<div><b>职务:</b>"+(data[i].work_position)+"</div>" +
+                                     "<div><b>单位住址:</b>"+(data[i].work_p+data[i].work_c+data[i].work_t+data[i].work_s)+"</div>" +
+                                     "</div>"
+                         }
+                         $("#box").html(str)
+                     }
+
+
+                    return
+                },
+                error: function () {
+                    alert("异常！");
+                }
+            });
+        }
+    })
+</script>
