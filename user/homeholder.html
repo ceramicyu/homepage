@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>调查表</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css"
           integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
@@ -18,7 +20,7 @@
             crossorigin="anonymous"></script>
 </head>
 <body>
-<form action="http://106.13.60.133:9000" method="post">
+<article>
     <div class="form-inline">
         <div class="row" >
             <div class="col-xs-12  ">
@@ -38,10 +40,20 @@
         <div class="row">
             <div class="col-xs-12  ">
                 <div class="row" style="margin: 5px;">
+                    <label for="username" class="">辈分：</label>
+                    <input type="text" class="form-control" id="beifen" placeholder="辈分"/>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12  ">
+                <div class="row" style="margin: 5px;">
                     <label class="">性别：</label>
-                    <input type="radio" class="form-control" name="sex" value="0" placeholder="性别"/>保密&nbsp;
-                    <input type="radio" class="form-control" name="sex" value="1" placeholder="性别"/>男&nbsp;
-                    <input type="radio" class="form-control" name="sex" value="2" placeholder="性别"/>女
+                    <div class="row" style="margin-left: 20px;">
+                        <input type="radio"  name="sex" value="0" placeholder="性别"/>保密&nbsp;
+                        <input type="radio"  name="sex" value="1" placeholder="性别"/>男&nbsp;
+                        <input type="radio"  name="sex" value="2" placeholder="性别"/>女
+                    </div>
                 </div>
             </div>
         </div>
@@ -211,13 +223,60 @@
                 </div>
             </div>
         </div>
-        <button type="submit" class="btn btn-default">Submit</button>
+        <button type="submit" class="btn btn-default" id="submit">提交</button>
     </div>
 
 
 
 
-</form>
+</article>
 
 </body>
 </html>
+
+<script>
+    $(function () {
+        //提交保存
+        $("#submit").off("click").on("click", function () {
+            var ac = {
+                username: $("#username").val(),
+                beifen:$("#beifen").val(),
+                sex:$("input[name='sex']:checked").val(),
+                birthday: $("#birthday").val(),
+
+                addr_p: $("#addr_p").val(),
+                addr_c: $("#addr_c").val(),
+                addr_t: $("#addr_t").val(),
+                addr_s: $("#addr_s").val(),
+
+                edu: $("#edu").val(),
+
+                work_type:$("#work_type").val(),
+                work_place:$("#work_place").val(),
+                work_position:$("#work_position").val(),
+
+                work_p:$("#work_p").val(),
+                work_c:$("#work_c").val(),
+                work_t:$("#work_t").val(),
+                work_s:$("#work_s").val(),
+
+                tel:$("#tel").val(),
+                wechat:$("#wechat").val()
+            }
+            console.log(ac)
+            $.ajax({
+                type: "POST",//方法类型
+                dataType: "json",//预期服务器返回的数据类型
+                url: "106.13.60.133:9000/user/homeholder",//url
+                data: ac,
+                success: function (data) {
+                    alert("成功");
+                    return
+                },
+                error: function () {
+                    alert("异常！");
+                }
+            });
+        })
+    })
+</script>
