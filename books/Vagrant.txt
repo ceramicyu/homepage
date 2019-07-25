@@ -1,0 +1,251 @@
+Vagrant 日常操作
+
+建立一个工作目录
+打开命令行工具，终端工具，或者iTerm2等，建立一个我们将要新建虚机的项目目录，例如 first-vm：
+
+cd $HOME
+mkdir -p vms/first-vm
+cd vms/first-vm
+
+Windows的命令可能像这样：
+    cd %HOME%
+    mkdir -p vms\first-vm
+    cd vms\first-vm
+
+我们需要一个完全空白的工作目录作为开始。如上我们新建一个目录当做项目目录的基准位置。
+初始化一个操作系统
+以 Ubuntu 操作系统为虚拟机的例子，我们可以这样初始化：
+vagrant init ubuntu/xenial64
+
+这个命令将会去下载 ubuntu 的 box 镜像回来，然后以该镜像为核心，在工作目录下建立一份虚拟机规范描述文件 Vagrantfile。有关的描述我们稍后会加以介绍。
+在这里，你需要知道的是，你可以修改或查看这个文本格式的文件。本质上说，Vagrantfile采用ruby等价的语法，所以你可以选择文本编辑器按照ruby进行语法加亮。在启动这个vagrant虚机之前，可以修改Vagrantfile中的配置，例如添加更多网卡。
+启动虚拟机并操作它
+那么，我们可以启动这个虚机或者关闭它：
+vagrant up         #启动虚机
+vagrant halt       #停止虚机
+vagrant destroy [-f]    #删除虚机
+
+删除虚机的指令将会全部删除虚机的后端vmm中的全部相关文件、快照等等，但并不会删除项目目录中的 Vagrantfile 。
+当虚机启动之后，在项目目录执行命令 vagrant ssh 可以登录到虚拟机中。
+虚机目录 /vagrant 和项目目录是自动同步的，在虚机中写入/vagrant中将会在宿主机中的项目目录中找到相应的内容。
+虚机是完整的  Ubuntu 操作系统，当使用 vagrant ssh 登录到虚拟机中之后，你得到了一个虚拟机的终端控制台，现在你可以使用 Ubuntu 自身的shell指令了，并且可以随时通过 exit 结束控制台返回到宿主机的控制台环境。
+$ vagrant up
+...
+$ vagrant ssh
+vagrant@vm1> ll /vagrant
+...
+vagrant@vm1> exit
+$ ...
+$ vagrant shutdown
+
+使用Vagrant
+常用命令
+vagrant init [name [url]]        # 初始化当前目录到 vagrant 环境
+vagrant up                       # 启动虚拟机
+vagrant halt                     # 关闭虚拟机
+vagrant reload                   # 重启虚拟机
+vagrant status                   # 查看虚拟机运行状态
+vagrant destroy [-f]              # 销毁当前虚拟机（但不删除Vagrantfile）
+vagrant suspend                  # 挂起当前虚拟机
+vagrant resume                   # 恢复被挂起的vm
+
+vagrant ssh                      # SSH 登录至虚拟机
+
+vagrant box add ADDRESS          # 安装box文件/url到本地
+vagrant box list                 # 列出所有本地已安装的box列表
+vagrant box outdated             # 检查已安装的box是否有更新的版本
+vagrant box remove NAME          # 删除某个已安装的box
+
+vagrant package         # 打包当前虚拟机环境为box文件以用于分发
+vagrant plugin          # 安装卸载vagrant插件
+vagrant provision       # 执行专门的环境初始化脚本
+vagrant ssh-config      # 输出ssh连接的一些信息
+vagrant version         # 获取vagrant的版本
+
+更多命令可以查看 vagrant 官方的文档。
+转换现有虚拟机为box包
+对于刚建立的第一个虚拟机镜像first-vm，它的项目目录名称为“first-vm”，并且已经至少使用 vagrant up 启动过一次了，那么我们现在可以将这个虚拟机导出为box包：
+vagrant package --base=first-vm --output=first-vm-v1.box
+
+这个box同样可以被添加到本机的vagrant boxes缓存中：
+vagrant box add first-vm-v1.box --name=first-vm-v1
+
+box文件实际上是一个 OVF 包。
+
+开源虚拟化格式OVF文件是一种开源的文件规范，它描述了一个开源、安全、有效、可拓展的便携式虚拟打包以及软件分布格式，它一般有几个部分组成，分别是ovf文件、mf文件、cert文件、vmdk文件和iso文件。
+
+如果网络模式中使用 private_network 的话，在打包之前需要清除一下private_network的设置，避免不必要的错误：
+vm$ sudo rm -f /etc/udev/rule.d/70-persistent-net.rules
+
+这条bash指令应该在虚机中被执行，对于不同的操作系统来说，文件的位置可能是有变化的。
+将这个box文件分发给同事，则他们也可以创建一个完全等价的虚拟机。
+vagrant box add first-vm-v1.box --name=myteam/first-vm-v1
+vagrant init my-team/first-vm-v1
+vagrant up
+
+Vagrantfile 介绍
+此前，我们通过 vagrant init 的指令创建了新的虚拟机环境，在工作目录中一个 Vagrantfile将被自动创建，如果它尚未存在的话。
+这个文件通常应该是这样子的：
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# All Vagrant configuration is done below. The "2" in Vagrant.configure
+# configures the configuration version (we support older styles for
+# backwards compatibility). Please don't change it unless you know what
+# you're doing.
+Vagrant.configure("2") do |config|
+  # The most common configuration options are documented and commented below.
+  # For a complete reference, please see the online documentation at
+  # https://docs.vagrantup.com.
+
+  # Every Vagrant development environment requires a box. You can search for
+  # boxes at https://vagrantcloud.com/search.
+  config.vm.box = "ubuntu/xenial64"
+
+  # Disable automatic box update checking. If you disable this, then
+  # boxes will only be checked for updates when the user runs
+  # `vagrant box outdated`. This is not recommended.
+  # config.vm.box_check_update = false
+
+  # Create a forwarded port mapping which allows access to a specific port
+  # within the machine from a port on the host machine. In the example below,
+  # accessing "localhost:8080" will access port 80 on the guest machine.
+  # NOTE: This will enable public access to the opened port
+  # config.vm.network "forwarded_port", guest: 80, host: 8080
+
+  # Create a forwarded port mapping which allows access to a specific port
+  # within the machine from a port on the host machine and only allow access
+  # via 127.0.0.1 to disable public access
+  # config.vm.network "forwarded_port", guest: 80, host: 8080, host_ip: "127.0.0.1"
+
+  # Create a private network, which allows host-only access to the machine
+  # using a specific IP.
+  # config.vm.network "private_network", ip: "192.168.33.10"
+
+  # Create a public network, which generally matched to bridged network.
+  # Bridged networks make the machine appear as another physical device on
+  # your network.
+  # config.vm.network "public_network"
+
+  # Share an additional folder to the guest VM. The first argument is
+  # the path on the host to the actual folder. The second argument is
+  # the path on the guest to mount the folder. And the optional third
+  # argument is a set of non-required options.
+  # config.vm.synced_folder "../data", "/vagrant_data"
+
+  # Provider-specific configuration so you can fine-tune various
+  # backing providers for Vagrant. These expose provider-specific options.
+  # Example for VirtualBox:
+  #
+  # config.vm.provider "virtualbox" do |vb|
+  #   # Display the VirtualBox GUI when booting the machine
+  #   vb.gui = true
+  #
+  #   # Customize the amount of memory on the VM:
+  #   vb.memory = "1024"
+  # end
+  #
+  # View the documentation for the provider you are using for more
+  # information on available options.
+
+  # Enable provisioning with a shell script. Additional provisioners such as
+  # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
+  # documentation for more information about their specific syntax and use.
+  # config.vm.provision "shell", inline: <<-SHELL
+  #   apt-get update
+  #   apt-get install -y apache2
+  # SHELL
+end
+
+这个文件的内容很容易读懂。
+
+
+box
+  config.vm.box = "ubuntu/xenial64"
+
+这句话是指定操作系统用的。换句话说，你用文本编辑器修改它也就会随心替换系统了。
+
+只不过如果你真的要这么做的话，需要执行 vagrant destroy; vagrant up 这样的序列，以便清理旧的虚拟机设施和以新的虚机配置创建相应的设施。
+
+对于 VirtualBox来说，它提供了 VBoxManage 命令行工具可以针对某个 VM 做很多事，modifyvm 就是一条可以修订 VM 配置参数的子命令。而Vagrant也可以在配置文件 Vagrantfile 中操作 virtualbox 以达到类似的目的。例如：
+  config.vm.provider "virtualbox" do |v|
+    v.customize ["modifyvm", :id, "--name", "bastion", "--memory", "2048"]
+  end
+
+
+
+这个示例可以修改 VM 的内存为 2GB。
+
+
+网络设置
+默认情况下，vagrant通知provider创建 NAT 类型的网卡，这样虚拟机将能够和主机之间相互通讯，同时VM能够借助宿主机的外网环境直接访问公网。
+在这种情况下，我们可以指定VM的端口转发来暴露VM中的应用程序的端口，从而在宿主机上可以直接与该端口进行通信。
+  config.vm.network "forwarded_port", guest: 80, host: 8080
+
+例如，我们在VM中安装了nginx的话，上面的端口转发设定可以将其暴露为宿主机的 :8080 ，这样我们从宿主机或者内网的其他主机都可以访问VM中的nginx服务了。
+网络配置是个大话题，我们稍后会专列一章更多地讲述几种最佳实践。
+
+
+同步文件夹
+我们曾经提到过当 SSH 到 VM 中时，/vagrant 实际上和主机的VM工作目录是等价的，也就是 Vagrantfile  所在的那个目录。这种特性实际上就是 vagrant 建立的一个同步目录的机制。一般来说，它是通过 provider 的所谓 共享文件夹（Shared Folder）的特性来实现的。
+我们当然并不需要关心 provider 的特性，也不必关心 vagrant 是怎么做的。我们只需要知道，这个连接点是可以被自定义的：
+  config.vm.synced_folder "../data", "/vagrant_data"
+
+上面这一配置，会将宿主机的 VM工作目录/../data 映射为 VM中的 /vagrant_data。
+你还可以做到更多：
+
+同步文件夹支持符号链接，所以你可以通过符号链接聚合主机的其他位置到一个root连接点中。
+
+
+
+使用ruby循环语句建立多个 VMs
+在一个Vagrantfile配置中，建立一组VMs是很容易的事情：
+(1..3).each do |i|
+  config.vm.define "node-#{i}" do |node|
+    node.vm.provision "shell",
+      inline: "echo hello from node #{i}"
+  end
+end
+
+值得注意的是，使用ruby的 for i in 1..3 do 循环，你无法得到想要的结果。原因是 for i in 语句在每次循环迭代时为 i 赋新的值，并重用循环体的语句块，这就导致 |node| 也并不得到新的副本，而是上一次循环时的 node，结果是你只能得到一个不断修改后的单一的 VM。如下所示：
+# THIS DOES NOT WORK!
+for i in 1..3 do
+  config.vm.define "node-#{i}" do |node|
+    node.vm.provision "shell",
+      inline: "echo hello from node #{i}"
+  end
+end
+
+
+
+替换 VM 的 Locale
+一般情况下，SSH会话沿用宿主机控制台的Locale，但你可以通过预定义覆盖它，在会话中总是使用特定的语言：
+ENV["LC_ALL"] = "en_US.UTF-8"
+
+Vagrant.configure("2") do |config|
+  # ...
+end
+
+
+
+Provisioning
+Provisioning 也是一个大话题。我会考虑单列一章。
+不过在这里，我们主要是提及这个机制能干些什么。
+简单地说，Provisioning是一个首次启动时的后初始化点，它发生在 VM 操作系统被安装就绪，并首次启动完成时。你可以编写 Shell 脚本在这个点自动完成你的专属环境初始化动作，例如安装标准服务、安装bash扩展组件（例如git-prompt）、建立必要的工作文件夹和拉取特定的分发包之类。
+如果有必要，在今后，即使VM已经完成了首次初始化了，你也可以通过 vagrant up --provision 这样的指令来强制 VM 开机和再次执行 Provisioning 脚本。
+在 Vagrantfile 中，典型地可以这样指定 Provioning：
+$script = <<-SCRIPT
+echo I am provisioning...
+date > /etc/vagrant_provisioned_at
+SCRIPT
+
+Vagrant.configure("2") do |config|
+  config.vm.provision "shell", inline: $script
+end
+
+也可以指定一个脚本文件，注意我们通过 /vagrant 传递 provision.sh 到 VM 中，而典型的 box 系统中，/vagrant 是在 $PATH 搜索路径中的：
+Vagrant.configure("2") do |config|
+  config.vm.provision "shell", path: "provision.sh"
+end
+
+你也可以指定脚本的全路径名，甚至可以在 path 中指定一个 url。
